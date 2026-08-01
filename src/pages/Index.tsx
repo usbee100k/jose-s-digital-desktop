@@ -7,12 +7,15 @@ import blogMascot from "@/assets/blog-mascot.jpeg";
 
 type AppId = "main" | "contact" | "projects" | "links" | "faqs" | "more-faqs" | "josetube" | "about" | "blog" | `project:${string}`;
 
+type BlogBlock =
+  | { type: "text"; body: string }
+  | { type: "image"; url: string; alt?: string }
+  | { type: "video"; url: string };
+
 interface BlogPost {
   id: string;
   title: string;
-  body: string;
-  imageUrl?: string;
-  videoUrl?: string;
+  content: BlogBlock[];
   createdAt: string;
 }
 
@@ -50,14 +53,14 @@ const makePoster = (label: string) => `data:image/svg+xml;utf8,${encodeURICompon
 
 const PROJECTS = [
   {
-    slug: "multitool",
-    name: "Multitool CLI",
-    desc: "a tiny tool for managing local applications.",
+    slug: "kubernetes",
+    name: "Kubernetes Infrastructure Script",
+    desc: "an automated script install of kubernetes for instant deployment.",
     body: [
-      "--",
-      "--",
-      "--",
-      "--",
+      "After aquiring an old laptop I wanted to get into setting up a Kubernetes cluster. I've been more interested in redundancy, as I have had a lot of issues with my current setup. I will also mention I wanted to learn about this since redundancy is a pilar of networking.",
+      "The idea that your software survives even if your hardware fails was essential to integrate into my current setup. I want high availability and POWERRR. So my ideal setup is 4 computers, 2 worker nodes, 2 control planes, but I want one of them to have the workload taint. That way I have more power, but then still have an extra control plane incase one of them fails.",
+      "So I already had a general understanding of Kubernetes, simply put it; An orchestration of containters, like docker, across multiple computers. So the way I wanted to learn was gonna be through making Infrastructure As Code. A combination of deployment through script, control through yaml, and GitOps implemention for easy backups, updates, rollbacks, upgrades, and many more opportunities achieved through Kubernetes/containerization.",
+      "The first part was creating what I wanted it to look like, what I wanted it to do and what I wanted it to use. So I created a bootstraper, a control plane initializer, worker node initializer, and a couple other options.",
     ],
     video: {
       src: `/testfoootage.mp4`,
@@ -123,32 +126,167 @@ const Index = () => {
   const [windows, setWindows] = useState<OpenWindow[]>([{ id: "main", z: 1 }]);
   const [topZ, setTopZ] = useState(1);
   const [activeVideo, setActiveVideo] = useState<VideoMeta | null>(null);
+  
   // Hardcoded blog posts — only the site owner edits these in code.
+  // EXAMPLE:
+  //
+  // {
+  //   id: "post-x",
+  //   title: "title",
+  //   content: [
+  //     {
+  //         type: "text",
+  //        body: "0", 
+  //     },
+  //     {
+  //       type: "text",
+  //       body: "test1", 
+  //    }, 
+  //    {
+  //     type: "text",
+  //     body: "text2", 
+  //  },
+  //   ],      
+  //     createdAt: "jul 11, 2026",
+  // },
+  
   const posts: BlogPost[] = [
     {
+      id: "post-7",
+      title: "headless laptop update",
+      content: [
+        {
+          type: "text",
+          body: "0", 
+        },
+        {
+          type: "text",
+          body: "test1", 
+         }, 
+         {
+          type: "text",
+          body: "text2", 
+       },
+      ],      
+      createdAt: "jul 15, 2026",
+    },
+    {
+      id: "post-6",
+      title: "future home lab setup",
+      content: [
+        {
+          type: "text",
+          body: "so this new obsesstion of mine is network related, i've been really digging the 10inch rack builds. r/minilab is a really cool space. i'll make a post there once i make this project im going to talk about happen.", 
+        },
+        { type:"image", url: "/rack inspo.webp" },
+        {
+          type: "text",
+          body: "i saw a user post a ikea kallax rack lab that is 3d printed out and makes a clean easy 7u rack system. i saw this at the same time i picked up a 4x4 kallax cabinet for my new apartment.", 
+         }, 
+         {
+          type: "text",
+          body: "so ideally i'll use two cubes for my custom rack meaning i have 14u of space to work with. in the future i would ideally have a 2x4 kallax, full custom refinshed with the help of my carpentry background. i got a render that gives a picture for how i want it. ", 
+       },
+       { type:"image", url: "/rack render.webp" },
+       {
+        type: "text",
+        body: "i went with this style because i wanted the whole cabinet to be dedicated to my servers/home-network. it's a cool style to me, pretty minimal footprint, super easy to expand. having a dedicated box for networking, servers, nas, ai computer cluster.",
+       },
+      ],      
+      createdAt: "jul 12, 2026",
+      },
+    {
+      id: "post-5",
+      title: "oh my !!",
+      content: [
+        {
+           type: "text",
+           body: "its been a couple days and let me tell you its been a handful. this has been my attempt just trying to see whatever works. fair warning i do have a new plan of attack that i will try after this. but so far this is what i have been up to.", 
+        },
+        {
+          type: "text",
+          body: "my first idea was to load a linux os to a ssd. this computer has no drive so my hypothesis was since the ssd is the only drive connected (usb 3.0 10g), it will only read that device and boot straight into linux and work perfectly. obviously that never actually happens in real life.", 
+        }, 
+        {
+        type: "text",
+        body: "i first tried to download a linux instantce on a usb ssd with my imac ubuntu server. it kept breaking my sudo when i was chroot into the ssd linux instance. Beacause i was in the chroot i thought it was working, but it wasnt after testing by loading the os on my main pc.", 
+        },
+        {
+          type: "text",
+          body: "that within itself troubleshooting took up hours of my life. i then choose to get a live usb for ubuntu server, run it on my main pc then load the installation to my external ssd. i got visual confirmation with the keyboard lights that i boot into the computer's bios after i press f10 to save and quit it restarts the pc.",
+        },
+        {
+          type: "text",
+          body: "so the only issue is trying to load into an os blindly, because our internal screen is broken and computer wont output to hdmi so we cant work at bios level. if we can load into os we can see on external screen for sure.",
+        },
+        {
+          type: "text",
+          body: "so next course of action is to blind live usb install ubuntu server witih patience and lots of luck. then if it loads at least i can ssh through my other computer to get drivers so the hdmi works. the reason it didnt work is because the drivers that were downloaded through my computer doesn't allow me to boot straight through it without messing with secure boot. a live usb will make it boot into the drive instantly. i just have to be slick with downloading ubuntu accordingly.",
+        },
+      ],      
+        createdAt: "jul 11, 2026",
+    },
+    {
       id: "post-4",
-      title: "test",
-      body: "test",
-      createdAt: "apr 30, 3000",
+      title: "new project!",
+      content: [
+        {
+           type: "text",
+           body: "a new friend of mine gave me a laptop with no screen, passed on the project to me haha. i'm starting to diagnose this but there are some issues that can clue me on what we can try", 
+        },
+        {
+          type: "text",
+          body: "doesnt go to external monitor because bios is locked to work only on internal monitor. im going to see if i can bypass this by booting into linux and seeing if the drivers can get the external monitor signal to show the pc is working.", 
+       }, 
+       {
+        type: "text",
+        body: "if i can get this working i will make this my third server and might start working more on kubernetes since i have the hardware to do so. lets hope this is an easy fix!", 
+     },
+      ],      
+        createdAt: "jul 8, 2026",
     },
     {
       id: "post-3",
-      title: "new homelab milestone",
-      body: "finally got my windows domain controller talking nicely to my pfsense box. dns, dhcp, and group policy all behaving. felt good to see clients pick up the right policies on first boot.",
-      createdAt: "may 2, 2026",
+      title: "new homelab setup",
+      content: [
+        {
+          type: "text",
+          body: "i got my network all connected, now mind you my setup is a lil janky but it works. it protects my network, pi-hole for ads, wireguard for vpn, navidrome for music, portainter for docker management, and more.",
+        },
+        { type: "image", url: "/pc server.webp" },
+        {
+          type: "text",
+          body: "this is my router below, i dont have a dedicated switch but i have a parts list for a specific build i'd love to do in the future. right now i only have 2 servers. i would like to have another 2 servers down the road but for now these two servers are more then enough for me.",
+        },
+        { type:"image", url: "/router.webp" },
+        {
+          type: "text",
+          body: "i had to spoof my providers mac address onto my router to be able to have my internet connection established, after doing that my server updated my new ip address to my duckdns. then my network worked accordingly :D",
+        },
+      ],
+      createdAt: "jul 1, 2026",
     },
     {
       id: "post-2",
       title: "shipped the portfolio rewrite",
-      body: "redid the whole site as a desktop OS. windows, taskbar, draggable everything. it's silly and i love it. blog window included so i can drop updates without leaving the vibe.",
-      imageUrl: "/placeholder.svg",
+      content: [
+        {
+          type: "text",
+          body: "redid the whole site as a desktop OS. windows, taskbar, draggable everything. it's silly and i love it. blog window included so i can drop updates without leaving the vibe.",
+        },
+      ],
       createdAt: "apr 24, 2026",
     },
     {
       id: "post-1",
       title: "cisco packet tracer deep dive",
-      body: "spent the weekend building out a multi-vlan campus topology in packet tracer. inter-vlan routing on a layer 3 switch, dhcp relay, and acls between segments. wrote up the lab in the projects window.",
-      videoUrl: "/testfoootage.mp4",
+      content: [
+        {
+          type: "text",
+          body: "spent the weekend building out a multi-vlan campus topology in packet tracer. inter-vlan routing on a layer 3 switch, dhcp relay, and acls between segments. wrote up the lab in the projects window.",
+        },
+        { type: "video", url: "/testfoootage.mp4" },
+      ],
       createdAt: "apr 10, 2026",
     },
   ];
@@ -521,10 +659,44 @@ const Index = () => {
         >
           <h2 className="text-lg font-bold mb-3">around the web</h2>
           <ul className="space-y-2">
-            <li className="flex items-center gap-2"><Github className="h-4 w-4 text-primary" /> github.com/usbee100k</li>
-            <li className="flex items-center gap-2"><Twitter className="h-4 w-4 text-primary" /> twitter.com/jose</li>
-            <li className="flex items-center gap-2"><LinkIcon className="h-4 w-4 text-primary" /> jose.dev/blog</li>
-            <li className="flex items-center gap-2"><LinkIcon className="h-4 w-4 text-primary" /> read.cv/jose</li>
+            <li>
+              <button
+                type="button"
+                onClick={() => copyToClipboard("github.com/usbee100k")}
+                className="flex items-center gap-2 w-full text-left hover:underline cursor-pointer"
+                title="Click to copy"
+              >
+                <Github className="h-4 w-4 text-primary shrink-0" /> github.com/usbee100k
+              </button>
+            </li>
+            <li>
+              <button
+                type="button"
+                onClick={() => copyToClipboard("linkedin.com/in/josecorr")}
+                className="flex items-center gap-2 w-full text-left hover:underline cursor-pointer"
+                title="Click to copy"
+              >
+                <Linkedin className="h-4 w-4 text-primary shrink-0" /> linkedin.com/in/josecorr
+              </button>
+            </li>
+            <li>
+              <button
+                type="button"
+                onClick={() => openApp("blog")}
+                className="flex items-center gap-2 w-full p-0 border-0 bg-transparent font-inherit text-left hover:underline cursor-pointer"
+              >
+                <LinkIcon className="h-4 w-4 text-primary" /> my blog (click me!)
+              </button>
+            </li>
+            <li>
+              <button
+                type="button"
+                onClick={() => openApp("about")}
+                className="flex items-center gap-2 w-full p-0 border-0 bg-transparent font-inherit text-left hover:underline cursor-pointer"
+              >
+                <LinkIcon className="h-4 w-4 text-primary" /> read.me/jose (click me!)
+              </button>
+            </li>
           </ul>
         </Window>
       )}
@@ -588,7 +760,7 @@ const Index = () => {
               { q: "do you game?", a: "occasionally — mostly multiplayer open worlds and shooters with friends." },
               { q: "what are you learning right now?", a: "deeper networking — subnetting, vlans, and routing protocols." },
               { q: "any certifications?", a: "working toward CompTIA Network+ and eventually CCNA." },
-              { q: "open to remote work?", a: "yep, remote or hybrid. bay area in person also works." },
+              { q: "open to remote work?", a: "yes! remote or hybrid. bay area in person also works." },
               { q: "favorite spot in santa cruz?", a: "anywhere along west cliff at sunset." },
               { q: "do you blog?", a: "writing more lately — mostly homelab notes and project breakdowns." },
               { q: "how can i contact you?", a: "check the contact window — email is fastest." },
@@ -608,7 +780,7 @@ const Index = () => {
           initialX={typeof window !== "undefined" ? Math.max(40, window.innerWidth / 2 - 360) : 80}
           initialY={60}
           width={720}
-          height={520}
+          height={690} //niceeee.... 
           zIndex={getZ("blog")}
           onFocus={() => focusApp("blog")}
           onClose={() => closeApp("blog")}
@@ -654,15 +826,28 @@ const Index = () => {
                         {post.createdAt}
                       </div>
                     </header>
-                    {post.imageUrl && (
-                      <img src={post.imageUrl} alt={post.title} className="w-full max-h-80 object-cover mt-2" />
-                    )}
-                    {post.videoUrl && (
-                      <video src={post.videoUrl} controls className="w-full max-h-80 mt-2 bg-black" />
-                    )}
-                    {post.body && (
-                      <p className="px-3 py-3 text-sm whitespace-pre-wrap leading-relaxed">{post.body}</p>
-                    )}
+                    {post.content.map((block, idx) => {
+                      if (block.type === "text") {
+                        return (
+                          <p key={idx} className="px-3 py-3 text-sm whitespace-pre-wrap leading-relaxed">
+                            {block.body}
+                          </p>
+                        );
+                      }
+                      if (block.type === "image") {
+                        return (
+                          <img
+                            key={idx}
+                            src={block.url}
+                            alt={block.alt ?? post.title}
+                            className="w-full max-h-80 object-cover"
+                          />
+                        );
+                      }
+                      return (
+                        <video key={idx} src={block.url} controls className="w-full max-h-80 bg-black" />
+                      );
+                    })}
                   </article>
                 ))}
               </div>
